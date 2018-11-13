@@ -5,7 +5,7 @@ This script will install **GIN 1.1.0.0**
 ***
 ## Installation:
 ```
-wget -q https://raw.githubusercontent.com/zoldur/GinCoin/master/gin_install.sh
+wget -q https://raw.githubusercontent.com/masterhash-us/GinCoin/master/gin_install.sh
 bash gin_install.sh
 ```
 ***
