@@ -12,8 +12,7 @@ COIN_PORT=10111
 RPC_PORT=10211
 
 
-NODEIP=$(curl -s4 api.ipify.org)
-
+NODEIP=$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -122,7 +121,7 @@ logintimestamps=1
 maxconnections=256
 #bind=$NODEIP
 masternode=1
-externalip=$NODEIP:$COIN_PORT
+externalip=$NODEIP
 masternodeprivkey=$COINKEY
 EOF
 }
@@ -137,30 +136,6 @@ function enable_firewall() {
   echo "y" | ufw enable >/dev/null 2>&1
 }
 
-
-
-function get_ip() {
-  declare -a NODE_IPS
-  for ips in $(netstat -i | awk '!/Kernel|Iface|lo/ {print $1," "}')
-  do
-    NODE_IPS+=($(curl --interface $ips --connect-timeout 2 -s4 api.ipify.org))
-  done
-
-  if [ ${#NODE_IPS[@]} -gt 1 ]
-    then
-      echo -e "${GREEN}More than one IP. Please type 0 to use the first IP, 1 for the second and so on...${NC}"
-      INDEX=0
-      for ip in "${NODE_IPS[@]}"
-      do
-        echo ${INDEX} $ip
-        let INDEX=${INDEX}+1
-      done
-      read -e choose_ip
-      NODEIP=${NODE_IPS[$choose_ip]}
-  else
-    NODEIP=${NODE_IPS[0]}
-  fi
-}
 
 
 function compile_error() {
@@ -227,7 +202,7 @@ function important_information() {
  echo -e "Configuration file is: ${RED}$CONFIGFOLDER/$CONFIG_FILE${NC}"
  echo -e "Start: ${RED}systemctl start $COIN_NAME.service${NC}"
  echo -e "Stop: ${RED}systemctl stop $COIN_NAME.service${NC}"
- echo -e "VPS_IP:PORT ${RED}$NODEIP:$COIN_PORT${NC}"
+ echo -e "VPS_IP:${NC}${GREEN}$NODEIP${NC}"
  echo -e "MASTERNODE PRIVATEKEY is: ${RED}$COINKEY${NC}"
  echo -e "Please check ${RED}$COIN_NAME${NC} is running with the following command: ${RED}systemctl status $COIN_NAME.service${NC}"
  echo -e "================================================================================================================================"
